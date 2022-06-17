@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project basedir="." name="ESA_BUI" default="control" >
+    <description> 
+      example ANT file for ESA BUI
+    </description>   
+    <!-- set global properties -->
+    <property name="projectName" value="SWT_ESA_BUI" />
+    <property name="author" value="Michael Wischniewski" />
+    <property name="authors-e-mail" value="s76826@bht-berlin.de" />
+    <property name="creationDate"  value="06092022" />
+    <property name="testDir" value="test"/>
+    <property name="os" value="Microsoft Windows 10.0.19044.1706"/>
+    <property name="buildDir" location="build" />
+    <property name="srcDir" location="src/refactoring" />
+    <property name="docDir" location="doc" />
+    <property name="jarDir" location="${buildDir}/lib"/>
+    <property name="junitDir" location="${testDir}/junit/xml" />
+    <property name="reportDir" location="${testDir}/junit/html" />
+    <property name="urlDir" location="github" />
+    <property name="antTest.libDir" location="C:/Users/Michael/apache_ant/lib" />
+    <property name="antReportDir" location="test/junit/report" />
+    <property name="browser" location="C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"  />
+      
+    <!-- - - - - - - - - - - - - - - - - - 
+         target: welcome                      
+        - - - - - - - - - - - - - - - - - --> 
+   <target name="welcome" description="Welcome message">
+       <echo>Hello, This build file compiles java source code into bin, compresses it and executes it.</echo>
+   </target>
+             
+    <!-- ================================= 
+             target: cleanup              
+            ================================= -->
+       <target name="cleanup" description="clean up">
+           <echo>Deletes all files that are not longer needed.</echo>
+           <delete dir = "${buildDir}"/>
+           <delete dir = "${testDir}"/>   
+           <delete dir = "${urlDir}"/> 
+       </target> 
+    
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: get                      
+         - - - - - - - - - - - - - - - - - -->   
+    <target name="get" description="Gets files from URL ">
+        <delete dir = "${urlDir}"/> 
+        <mkdir dir="${urlDir}"/>
+        <get src="https://github.com/MikeW2022/SWT_2022/files/8647145/MichaelWischniewski.pdf" 
+        dest = "${urlDir}" 
+        verbose="true"
+        usetimestamp="true" />
+    </target> 
+    
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: javadoc                      
+         - - - - - - - - - - - - - - - - - -->   
+    <target name="javadoc" depends = "get" description="Generates code documentation using the javadoc tool.">
+        <delete dir = "${docDir}"/>
+        <mkdir dir = "${docDir}"/>
+        <javadoc author="true" verbose="false" windowtitle="JavaDoc" version="true" destdir="${docDir}" >
+             <fileset dir="${srcDir}" >
+                 <exclude name = "Country.java" />
+                 <exclude name = "Dozent.java" />
+                 <exclude name = "Student.java" />
+                 <exclude name = "MainProg.java" />
+             </fileset>
+        </javadoc>    
+    </target>
+    
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: exec                      
+         - - - - - - - - - - - - - - - - - -->  
+    <target name="exec" depends="javadoc" description="Opens downloade file" >
+        <echo> "Opens the downloaded file in a browser." </echo>
+        <exec executable="${browser}" timeout="10000" os="${os}" >
+            <arg value="${urlDir}/MichaelWischniewski.pdf" />
+            <arg value="${docDir}/refactoring/Person.html" />
+        </exec>
+    </target> 
+    
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: buildDir                      
+         - - - - - - - - - - - - - - - - - -->   
+    <target name="buildDir" depends = "exec" description="Create a directory for Java binaries">
+        <echo>Create the build directory structure in "${buildDir} used by target "compile" </echo>
+        <delete dir="${buildDir}"/>
+        <!-- Create the build directory structure in "${builddir} used by target "compile" --> 
+        <mkdir dir="${buildDir}"/>
+    </target>
+    
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: javac                      
+         - - - - - - - - - - - - - - - - - -->  
+    <target name="javac" depends="buildDir"  description="Compiles the source">
+        <!-- Compile java code from ${srcDir} into ${buildDir} -->
+           <javac srcDir = "${srcDir}"  destdir = "${buildDir}" includeantruntime="yes" />
+       </target>        
+       
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: jar                      
+         - - - - - - - - - - - - - - - - - -->   
+    <target name="jar" depends="javac" description="Compresses the Java binaries into a jar file">
+        <!-- create a timestamp -->
+        <tstamp />
+        <!-- Compresses the Java binaries into a jar in "${jarDir} used by target "compile" --> 
+        <jar jarfile="${jarDir}/${DSTAMP}/${DSTAMP}${TSTAMP}-${projectName}.jar" basedir="${buildDir}"/>
+    </target>
+    
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: junit                      
+         - - - - - - - - - - - - - - - - - -->   
+    <target name="junit" depends="jar" description="Unit tests for the java project files" >
+        <mkdir  dir="${junitDir}"/>
+        <junit printsummary="yes" timeout="30000" haltonfailure="no" fork="yes" >
+            <classpath>
+                <pathelement path ="${antTest.libDir}" />
+            </classpath>
+                    
+            <modulepath>
+                <pathelement path="${antTest.libDir}/junit-4.13.1.jar"/>   
+            </modulepath>      
+            <!-- package and class name of the junit test, which shall be tested -->
+            <!-- In this example shall be tested the junit class "SimpleTestClassTest.java" in the package "testcases" -->
+            <test name="testcases.SimpleTestClassTest" 
+                haltonfailure="no" todir="${junitDir}" outfile="junitTest">
+                 <formatter type="xml" />
+            </test>
+        </junit>
+    </target>
+
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: junitreport                      
+         - - - - - - - - - - - - - - - - - --> 
+    <target name="junitreport" depends="junit" description="Creates a report for the rest result">
+        <mkdir dir="${reportDir}"/>
+        <junitreport todir="${reportDir}">
+            <fileset dir="${junitDir}">
+                <include name="*.xml"/>
+            </fileset>
+            <report format="frames" todir="${reportDir}"/>
+        </junitreport>
+    </target>   
+       
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: control                      
+         - - - - - - - - - - - - - - - - - -->  
+    <target name="control" depends="welcome, cleanup, junitreport" 
+        description="Runs unit tests, creates jar files, compiles java files, creates Javadocs, gets files from a web ressource,
+        and opens these in a web browser" >
+        <echo message="Control target for the excution of the targets &quot;welcome&quot;, &quot;cleanup&quot;, and &quot;junitreport&quot;" />
+    </target>        
+    
+   
+</project>
+
+

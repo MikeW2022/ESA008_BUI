@@ -1,0 +1,39 @@
+<project basedir="." name="ESA_BUI" default="cleanup" >
+    <description> 
+      example ANT file for ESA BUI
+    </description>   
+    <!-- set global properties -->
+    <property name="build" location="build"/>
+    
+     <!-- - - - - - - - - - - - - - - - - - 
+          target: hello                      
+         - - - - - - - - - - - - - - - - - --> 
+    <target name="hello" description="Simply hello output">
+        <echo>Hello world</echo>
+    </target>
+
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: hello2                      
+         - - - - - - - - - - - - - - - - - -->  
+    <target name="hello2" depends = "hello" description="Another yet hello output">
+           <echo>Peace on earth and a good spirit for everyone! </echo>
+       </target>     
+    
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: mkdir                      
+         - - - - - - - - - - - - - - - - - -->   
+    <target name="mkdir" depends = "hello2" description="make a directory">
+        <echo>Create a directory in "${dir}/lib</echo>
+        <!-- Create the desired target directory --> 
+        <mkdir dir="${build}/lib"/>
+    </target>
+    
+    <!-- ================================= 
+          target: cleanup              
+         ================================= -->
+    <target name="cleanup" depends = "mkdir" description="clean up">
+        <echo>The created directory "${dir}/lib" will be deleted again.</echo>
+        <!-- Delete the desired target directory --> 
+        <delete dir = "${build}/lib"/>      
+    </target>
+</project>

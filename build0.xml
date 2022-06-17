@@ -1,0 +1,44 @@
+<project basedir="." name="ESA_BUI" default="level2" >
+    <description> 
+      example ANT file for ESA BUI
+    </description>
+    
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: hello                      
+         - - - - - - - - - - - - - - - - - --> 
+    <target name="hello" description="simply hello output">
+        <echo>Hello world</echo>
+    </target>
+   
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: level1                      
+         - - - - - - - - - - - - - - - - - -->  
+    <target name="level1" depends="hello" description="">
+           <echo>You can read the output for level1 here </echo>
+       </target>
+    
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: level2                      
+         - - - - - - - - - - - - - - - - - -->    
+    <target name="level2" depends="level1" description="output for level2">
+           <echo>You can read the output for level2 here.</echo>
+       </target>
+</project>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- consider: dependency list or dependency tree A2 A3-> B1 B2 -->
+<!-- dependency list depends="LEVEL1, A1, A2" -->
+<!-- sample files aus dem web. buzzword "buildmanagement" -->
+<!-- Vars sind finals; im Video an 32:00 min -->
